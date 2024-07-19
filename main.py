@@ -33,6 +33,7 @@ body_object = sg.Multiline(
     font = ("Roboto", 14),
     justification="center",
     no_scrollbar=True,
+    disabled=True,
 ) 
 
 ack_button = sg.Button(
@@ -53,7 +54,7 @@ layout = [
 ]
 
 window = sg.Window(
-    'System Uptime Notice',
+    'Notice from IT',
     layout,
     background_color = color_nexus_light_gray,
     disable_close = True,
@@ -62,7 +63,7 @@ window = sg.Window(
     grab_anywhere = True,
     margins = (0, 0),
     finalize = True,
-    icon = "assets/logo.png"
+    #icon = "assets/logo.png" TODO: Fix this
 )
 
 window.ding()
