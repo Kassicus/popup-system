@@ -56,14 +56,13 @@ window = sg.Window(
     'System Uptime Notice',
     layout,
     background_color = color_nexus_light_gray,
-    #disable_minimize = True,
     disable_close = True,
     keep_on_top = True,
-    #no_titlebar = True,
     size = (800, 600),
     grab_anywhere = True,
     margins = (0, 0),
-    finalize = True
+    finalize = True,
+    icon = "assets/logo.png"
 )
 
 window.ding()
