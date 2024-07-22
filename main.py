@@ -20,13 +20,13 @@ fonts = {}
 
 if display_size.current_w > 1920:
     fonts = {
-        "header_font": pygame.font.SysFont("Arial", 56, True),
-        "body_font": pygame.font.SysFont("Arial", 24)
+        "header_font": pygame.font.Font("assets/fonts/Roboto-Regular.ttf", 56),
+        "body_font": pygame.font.Font("assets/fonts/Roboto-Regular.ttf", 24)
     }
 else:
     fonts = {
-        "header_font": pygame.font.SysFont("Arial", 48, True),
-        "body_font": pygame.font.SysFont("Arial", 24)
+        "header_font": pygame.font.Font("assets/fonts/Roboto-Regular.ttf", 48),
+        "body_font": pygame.font.Font("assets/fonts/Roboto-Regular.ttf", 20)
     }
 
 def justify_text(text, max_width, pos, space, font, surface):
@@ -127,7 +127,6 @@ class Button(pygame.sprite.Sprite):
 class Window():
     def __init__(self):
         self.screen = pygame.display.set_mode([800, 600], pygame.NOFRAME)
-        #pygame.display.set_caption("System Uptime Notice")
 
         self.running = True
         self.events = pygame.event.get()
@@ -135,7 +134,10 @@ class Window():
         self.header_text = "System Uptime Notice"
         self.header_surface = fonts["header_font"].render(self.header_text, True, colors["white"])
 
-        self.body_text = "This is just a warning that your system uptime has exceeded 24 hours. If your system uptime exceeds 7 days you will be required to reboot. We recommend saving and closing all programs and running any available windows updates followed by a reboot at your earliest convienience."
+        self.text_1 = "This is just a warning that your system uptime has exceeded 24 hours. If your system uptime exceeds 7 days you will be required to reboot. We recommend saving and closing all programs and running any available windows updates followed by a reboot at your earliest convienience."
+        self.text_2 = "If you have any questions or concerns please email the helpdesk at helpdesk@archnexus.com"
+
+        self.body_text = [self.text_1, self.text_2]
 
         #self.ok_button = Button(100, 500, "Ok", 25, colors["white"], colors["nexus_green"])
         self.cancel_button = Button("Acknowledge", 25, colors["white"], colors["nexus_orange"], self.close)
@@ -174,7 +176,9 @@ class Window():
         pygame.draw.rect(self.screen, colors["nexus_blue"], (0, 0, 800, 35 + int(self.header_surface.get_height() + 35)))
         
         self.screen.blit(self.header_surface, (400 - int(self.header_surface.get_width() / 2), 35))
-        justify_text(self.body_text, 700, (50, 150), 10, fonts["body_font"], self.screen)
+        
+        justify_text(self.text_1, 700, (50, 150), 10, fonts["body_font"], self.screen)
+        justify_text(self.text_2, 700, (50, 300), 10, fonts["body_font"], self.screen)
 
         self.buttons.draw(self.screen)
 
