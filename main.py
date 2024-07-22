@@ -3,6 +3,8 @@ import sys
 
 pygame.init()
 
+display_size = pygame.display.Info()
+
 colors = {
     "black": pygame.Color(0, 0, 0, 255),
     "white": pygame.Color(255, 255, 255, 255),
@@ -14,10 +16,18 @@ colors = {
     "nexus_green": pygame.Color(149, 201, 61, 255)
 }
 
-fonts = {
-    "header_font": pygame.font.SysFont("Roboto", 48, True),
-    "body_font": pygame.font.SysFont("Roboto", 24)
-}
+fonts = {}
+
+if display_size.current_h > 1920:
+    fonts = {
+        "header_font": pygame.font.SysFont("Roboto", 72, True),
+        "body_font": pygame.font.SysFont("Roboto", 28)
+    }
+else:
+    fonts = {
+        "header_font": pygame.font.SysFont("Roboto", 48, True),
+        "body_font": pygame.font.SysFont("Roboto", 20)
+    }
 
 def justify_text(text, max_width, pos, space, font, surface):
     words = text.split()
@@ -129,7 +139,7 @@ class Window():
 
         #self.ok_button = Button(100, 500, "Ok", 25, colors["white"], colors["nexus_green"])
         self.cancel_button = Button("Acknowledge", 25, colors["white"], colors["nexus_orange"], self.close)
-        self.cancel_button.pos = pygame.math.Vector2(int(400 - (self.cancel_button.get_width() / 2)), 475)
+        self.cancel_button.pos = pygame.math.Vector2(int(400 - (self.cancel_button.get_width() / 2)), 500)
 
         self.buttons = pygame.sprite.Group()
         #self.buttons.add(self.ok_button)
@@ -164,7 +174,7 @@ class Window():
         pygame.draw.rect(self.screen, colors["nexus_blue"], (0, 0, 800, 35 + int(self.header_surface.get_height() + 35)))
         
         self.screen.blit(self.header_surface, (400 - int(self.header_surface.get_width() / 2), 35))
-        justify_text(self.body_text, 700, (50, 225), 10, fonts["body_font"], self.screen)
+        justify_text(self.body_text, 700, (50, 150), 10, fonts["body_font"], self.screen)
 
         self.buttons.draw(self.screen)
 
@@ -175,4 +185,4 @@ class Window():
 if __name__ == '__main__':
     win = Window()
     win.start()
-    pygame.quit()
+    sys.exit(0)
