@@ -26,7 +26,7 @@ if display_size.current_w > 1920:
 else:
     fonts = {
         "header_font": pygame.font.SysFont("Arial", 48, True),
-        "body_font": pygame.font.SysFont("Arial", 20)
+        "body_font": pygame.font.SysFont("Arial", 24)
     }
 
 def justify_text(text, max_width, pos, space, font, surface):
