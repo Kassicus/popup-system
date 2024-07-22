@@ -8,17 +8,6 @@ colors = {
     "red": pygame.Color(255, 0, 0, 255)
 }
 
-class Square(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-
-        self.pos = pygame.math.Vector2(100, 100)
-
-        self.image = pygame.Surface([50, 50])
-        self.image.fill(colors["red"])
-        self.rect = self.image.get_rect()
-        self.rect.topleft = self.pos
-
 class Window():
     def __init__(self):
         self.screen = pygame.display.set_mode([800, 600], pygame.NOFRAME)
@@ -30,12 +19,9 @@ class Window():
 
         self.header_text = "System Uptime Notice"
 
-        self.header_surface = self.header_font.render(self.header_text, True, colors["white"])
-
-        self.test_square = Square()
+        self.header_surface = self.header_font.render(self.header_text, True, colors["black"])
 
         self.content = pygame.sprite.Group()
-        self.content.add(self.test_square)
 
     def start(self):
         while self.running:
@@ -56,6 +42,7 @@ class Window():
 
     def update(self):
         self.content.update()
+        pygame.display.update()
 
     def draw(self):
         self.screen.fill(colors["white"])
