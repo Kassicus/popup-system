@@ -18,15 +18,15 @@ colors = {
 
 fonts = {}
 
-if display_size.current_h > 1920:
+if display_size.current_w > 1920:
     fonts = {
-        "header_font": pygame.font.SysFont("Roboto", 72, True),
-        "body_font": pygame.font.SysFont("Roboto", 28)
+        "header_font": pygame.font.SysFont("Arial", 56, True),
+        "body_font": pygame.font.SysFont("Arial", 24)
     }
 else:
     fonts = {
-        "header_font": pygame.font.SysFont("Roboto", 48, True),
-        "body_font": pygame.font.SysFont("Roboto", 20)
+        "header_font": pygame.font.SysFont("Arial", 48, True),
+        "body_font": pygame.font.SysFont("Arial", 20)
     }
 
 def justify_text(text, max_width, pos, space, font, surface):
