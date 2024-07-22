@@ -18,6 +18,7 @@ fonts = {
     "body_font": pygame.font.SysFont("Roboto", 24)
 }
 
+
 def blit_text(surface, text, pos, font, color = colors["black"], max_width = 400, max_height = 400):
     words = [word.split(' ') for word in text.splitlines()]  # 2D array where each row is a list of words.
     space = font.size(' ')[0]  # The width of a space.
@@ -35,8 +36,9 @@ def blit_text(surface, text, pos, font, color = colors["black"], max_width = 400
         x = pos[0]  # Reset the x.
         y += word_height  # Start on new row.
 
+
 class Button(pygame.sprite.Sprite):
-    def __init__(self, text: str, padding: int, fgcolor, bgcolor):
+    def __init__(self, text: str, padding: int, fgcolor, bgcolor, command = None):
         pygame.sprite.Sprite.__init__(self)
 
         self.pos = pygame.math.Vector2(-500, -500)
@@ -46,6 +48,8 @@ class Button(pygame.sprite.Sprite):
         self.bgcolor = bgcolor
 
         self.hovered = False
+
+        self.command = command
 
         self.text_surface = fonts["body_font"].render(text, True, self.fgcolor)
 
@@ -58,8 +62,18 @@ class Button(pygame.sprite.Sprite):
     def update(self):
         self.check_hover()
 
+        if self.hovered:
+            if pygame.mouse.get_pressed()[0]:
+                self.run_command()
+
     def render_label(self, surface):
-        pygame.draw.rect(surface, self.bgcolor, (self.pos.x, self.pos.y, self.image.get_width(), self.image.get_height()))
+        if self.hovered:
+            pygame.draw.rect(surface, colors["nexus_blue"], (self.pos.x, self.pos.y, self.image.get_width(), self.image.get_height()))
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+        else:
+            pygame.draw.rect(surface, self.bgcolor, (self.pos.x, self.pos.y, self.image.get_width(), self.image.get_height()))
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+
         surface.blit(self.text_surface, (self.pos.x + self.padding, self.pos.y + self.padding))
 
     def check_hover(self):
@@ -72,6 +86,10 @@ class Button(pygame.sprite.Sprite):
 
     def get_width(self):
         return self.rect.width
+    
+    def run_command(self):
+        if self.command is not None:
+            self.command()
 
 
 class Window():
@@ -88,7 +106,7 @@ class Window():
         self.body_text = "This is just a warning that your system uptime has exceeded 24 hours. If your system uptime exceeds 7 days you will be required to reboot. We recommend saving and closing all programs and running any available windows updates followed by a reboot at your earliest convienience."
 
         #self.ok_button = Button(100, 500, "Ok", 25, colors["white"], colors["nexus_green"])
-        self.cancel_button = Button("Acknowledge", 25, colors["white"], colors["nexus_orange"])
+        self.cancel_button = Button("Acknowledge", 25, colors["white"], colors["nexus_orange"], self.close)
         self.cancel_button.pos = pygame.math.Vector2(int(400 - (self.cancel_button.get_width() / 2)), 475)
 
         self.buttons = pygame.sprite.Group()
@@ -112,6 +130,9 @@ class Window():
                 if event.key == pygame.K_q:
                     self.running = False
 
+    def close(self):
+        self.running = False
+
     def update(self):
         pygame.display.update()
         self.buttons.update()
@@ -127,6 +148,7 @@ class Window():
 
         for button in self.buttons:
             button.render_label(self.screen)
+
 
 if __name__ == '__main__':
     win = Window()
