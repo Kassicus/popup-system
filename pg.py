@@ -1,4 +1,5 @@
 import pygame
+import sys
 
 pygame.init()
 
@@ -18,23 +19,44 @@ fonts = {
     "body_font": pygame.font.SysFont("Roboto", 24)
 }
 
+def justify_text(text, max_width, pos, space, font, surface):
+    words = text.split()
+    lines = []
+    current_line = []
+    current_width = 0
 
-def blit_text(surface, text, pos, font, color = colors["black"], max_width = 400, max_height = 400):
-    words = [word.split(' ') for word in text.splitlines()]  # 2D array where each row is a list of words.
-    space = font.size(' ')[0]  # The width of a space.
-    max_width, max_height = max_width, max_height
+    for word in words:
+        word_width = font.size(word)[0]
+        if current_width + word_width + (len(current_line) - 1) * space <= max_width or not current_line:
+            current_line.append(word)
+            current_width += word_width
+        else:
+            lines.append(current_line)
+            current_line = [word]
+            current_width = word_width
+    lines.append(current_line)
+
     x, y = pos
-    for line in words:
+    word_height = font.size("Tg")[1]
+
+    for i, line in enumerate(lines):
+        line_width = sum(font.size(word)[0] for word in line)
+        is_last_line = (i == len(lines) - 1)
+        if not is_last_line:
+            total_space_width = max_width - line_width
+            if len(line) - 1 > 0:
+                adjusted_space = total_space_width / (len(line) - 1)
+            else:
+                adjusted_space = 0
+        else:
+            adjusted_space = space
+
+        x = pos[0]
         for word in line:
-            word_surface = font.render(word, True, color)
-            word_width, word_height = word_surface.get_size()
-            if x + word_width >= max_width:
-                x = pos[0]  # Reset the x.
-                y += word_height  # Start on new row.
+            word_surface = font.render(word, True, (0, 0, 0))
             surface.blit(word_surface, (x, y))
-            x += word_width + space
-        x = pos[0]  # Reset the x.
-        y += word_height  # Start on new row.
+            x += font.size(word)[0] + adjusted_space
+        y += word_height
 
 
 class Button(pygame.sprite.Sprite):
@@ -142,7 +164,7 @@ class Window():
         pygame.draw.rect(self.screen, colors["nexus_blue"], (0, 0, 800, 35 + int(self.header_surface.get_height() + 35)))
         
         self.screen.blit(self.header_surface, (400 - int(self.header_surface.get_width() / 2), 35))
-        blit_text(self.screen, self.body_text, (50, 225), fonts["body_font"], max_width = 750)
+        justify_text(self.body_text, 700, (50, 225), 10, fonts["body_font"], self.screen)
 
         self.buttons.draw(self.screen)
 
