@@ -27,11 +27,11 @@ class Fonts():
 
     def configure_fonts(self):
         if display_size.current_w > 1920:
-            self.header_font = pygame.font.Font("assets/fonts/Roboto-Regular.ttf", 56)
-            self.body_font = pygame.font.Font("assets/fonts/Roboto-Regular.ttf", 24)
+            self.header_font = pygame.font.Font("assets/fonts/Roboto-Regular.ttf", 48)
+            self.body_font = pygame.font.Font("assets/fonts/Roboto-Regular.ttf", 22)
         else:
             self.header_font = pygame.font.Font("assets/fonts/Roboto-Regular.ttf", 48)
-            self.body_font = pygame.font.Font("assets/fonts/Roboto-Regular.ttf", 20)
+            self.body_font = pygame.font.Font("assets/fonts/Roboto-Regular.ttf", 18)
 
 font = Fonts()
 
@@ -156,8 +156,8 @@ class Window():
         self.header_text = "System Uptime Notice"
         self.header_surface = font.header_font.render(self.header_text, True, color.white)
 
-        self.text_1 = "This is just a warning that your system uptime has exceeded 24 hours. If your system uptime exceeds 7 days you will be required to reboot. We recommend saving and closing all programs and running any available windows updates followed by a reboot at your earliest convienience."
-        self.text_2 = "If you have any questions or concerns please email the helpdesk at helpdesk@archnexus.com"
+        self.text_1 = "This is just a warning that your system uptime has exceeded 24 hours. If your system uptime exceeds 7 days you will be required to reboot. We recommend saving and closing all programs and running all available windows updates followed by a reboot at your earliest convienience."
+        self.text_2 = "If you have any questions or concerns please reach out to helpdesk by emailing helpdesk@archnexus.com"
 
         self.body_text = [self.text_1, self.text_2]
 
@@ -200,8 +200,8 @@ class Window():
         
         self.screen.blit(self.header_surface, (400 - int(self.header_surface.get_width() / 2), 35))
         
-        self.justified_text_1.render(50, 150)
-        self.justified_text_2.render(50, 150 + self.justified_text_1.get_height() + 35)
+        self.justified_text_1.render(50, 70 + self.header_surface.get_height() + 35)
+        self.justified_text_2.render(50, self.justified_text_1.pos[1] + self.justified_text_1.get_height() + 35)
 
         self.buttons.draw(self.screen)
 
