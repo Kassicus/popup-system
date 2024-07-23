@@ -31,9 +31,21 @@ class Fonts():
             self.body_font = pygame.font.Font("assets/fonts/Roboto-Regular.ttf", 22)
         else:
             self.header_font = pygame.font.Font("assets/fonts/Roboto-Regular.ttf", 48)
-            self.body_font = pygame.font.Font("assets/fonts/Roboto-Regular.ttf", 18)
+            self.body_font = pygame.font.Font("assets/fonts/Roboto-Regular.ttf", 20)
 
 font = Fonts()
+
+class Images():
+    def __init__(self):
+        self.nexus_logo = None
+
+        self.scale = 10
+
+    def load_images(self):
+        self.nexus_logo = pygame.image.load("assets/images/nexus_logo.png").convert_alpha()
+        self.nexus_logo = pygame.transform.scale(self.nexus_logo, (int(self.nexus_logo.get_width() / self.scale), int(self.nexus_logo.get_height() / self.scale)))
+
+images = Images()
 
 class JustifiedText():
     def __init__(self, text: str, max_width: int, space: int, font, surface):
@@ -149,20 +161,21 @@ class Button(pygame.sprite.Sprite):
 class Window():
     def __init__(self):
         self.screen = pygame.display.set_mode([800, 600], pygame.NOFRAME)
+        images.load_images()
 
         self.running = True
         self.events = pygame.event.get()
         
         self.header_text = "System Uptime Notice"
-        self.header_surface = font.header_font.render(self.header_text, True, color.white)
+        self.header_surface = font.header_font.render(self.header_text, True, color.nexus_blue)
 
-        self.text_1 = "This is just a warning that your system uptime has exceeded 24 hours. If your system uptime exceeds 7 days you will be required to reboot. We recommend saving and closing all programs and running all available windows updates followed by a reboot at your earliest convienience."
+        self.text_1 = "This is just a warning that your system uptime has exceeded 24 hours. If your system uptime exceeds 3 days you will be required to reboot. We recommend saving and closing all programs and running all available windows updates followed by a reboot at your earliest convienience."
         self.text_2 = "If you have any questions or concerns please reach out to helpdesk by emailing helpdesk@archnexus.com"
 
         self.body_text = [self.text_1, self.text_2]
 
         self.cancel_button = Button("Acknowledge", 25, color.white, color.nexus_orange, self.close)
-        self.cancel_button.pos = pygame.math.Vector2(int(400 - (self.cancel_button.get_width() / 2)), 500)
+        self.cancel_button.pos = pygame.math.Vector2(int(400 - (self.cancel_button.get_width() / 2)), 475)
 
         self.justified_text_1 = JustifiedText(self.text_1, 700, 10, font.body_font, self.screen)
         self.justified_text_2 = JustifiedText(self.text_2, 700, 10, font.body_font, self.screen)
@@ -196,9 +209,12 @@ class Window():
 
     def draw(self):
         self.screen.fill(color.white)
-        pygame.draw.rect(self.screen, color.nexus_blue, (0, 0, 800, 35 + int(self.header_surface.get_height() + 35)))
+        #pygame.draw.rect(self.screen, color.nexus_blue, (0, 0, 800, 35 + int(self.header_surface.get_height() + 35)))
         
-        self.screen.blit(self.header_surface, (400 - int(self.header_surface.get_width() / 2), 35))
+        self.screen.blit(images.nexus_logo, (50, 35))
+        self.screen.blit(images.nexus_logo, (800 - 50 - images.nexus_logo.get_width(), 35))
+
+        self.screen.blit(self.header_surface, (400 - int(self.header_surface.get_width() / 2), 45))
         
         self.justified_text_1.render(50, 70 + self.header_surface.get_height() + 35)
         self.justified_text_2.render(50, self.justified_text_1.pos[1] + self.justified_text_1.get_height() + 35)
