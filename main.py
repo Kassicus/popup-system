@@ -5,69 +5,91 @@ pygame.init()
 
 display_size = pygame.display.Info()
 
-colors = {
-    "black": pygame.Color(0, 0, 0, 255),
-    "white": pygame.Color(255, 255, 255, 255),
-    "nexus_blue": pygame.Color(0, 153, 216, 255),
-    "nexus_light_gray": pygame.Color(237, 237, 238, 255),
-    "nexus_middle_gray": pygame.Color(119, 131, 144, 255),
-    "nexus_dark_gray": pygame.Color(80, 79, 81, 255),
-    "nexus_orange": pygame.Color(241, 138, 0, 255),
-    "nexus_green": pygame.Color(149, 201, 61, 255)
-}
+class Colors():
+    def __init__(self):
+        self.black = pygame.Color(0, 0, 0, 255)
+        self.white = pygame.Color(255, 255, 255, 255)
+        self.nexus_blue = pygame.Color(0, 153, 216, 255)
+        self.nexus_light_gray = pygame.Color(237, 237, 238, 255)
+        self.nexus_middle_gray = pygame.Color(119, 131, 144, 255)
+        self.nexus_dark_gray = pygame.Color(80, 79, 81, 255)
+        self.nexus_orange = pygame.Color(241, 138, 0, 255)
+        self.nexus_green = pygame.Color(149, 201, 61, 255)
 
-fonts = {}
+color = Colors()
 
-if display_size.current_w > 1920:
-    fonts = {
-        "header_font": pygame.font.Font("assets/fonts/Roboto-Regular.ttf", 56),
-        "body_font": pygame.font.Font("assets/fonts/Roboto-Regular.ttf", 24)
-    }
-else:
-    fonts = {
-        "header_font": pygame.font.Font("assets/fonts/Roboto-Regular.ttf", 48),
-        "body_font": pygame.font.Font("assets/fonts/Roboto-Regular.ttf", 20)
-    }
+class Fonts():
+    def __init__(self):
+        self.header_font = None
+        self.body_font = None
 
-def justify_text(text, max_width, pos, space, font, surface):
-    words = text.split()
-    lines = []
-    current_line = []
-    current_width = 0
+        self.configure_fonts()
 
-    for word in words:
-        word_width = font.size(word)[0]
-        if current_width + word_width + (len(current_line) - 1) * space <= max_width or not current_line:
-            current_line.append(word)
-            current_width += word_width
+    def configure_fonts(self):
+        if display_size.current_w > 1920:
+            self.header_font = pygame.font.Font("assets/fonts/Roboto-Regular.ttf", 56)
+            self.body_font = pygame.font.Font("assets/fonts/Roboto-Regular.ttf", 24)
         else:
-            lines.append(current_line)
-            current_line = [word]
-            current_width = word_width
-    lines.append(current_line)
+            self.header_font = pygame.font.Font("assets/fonts/Roboto-Regular.ttf", 48)
+            self.body_font = pygame.font.Font("assets/fonts/Roboto-Regular.ttf", 20)
 
-    x, y = pos
-    word_height = font.size("Tg")[1]
+font = Fonts()
 
-    for i, line in enumerate(lines):
-        line_width = sum(font.size(word)[0] for word in line)
-        is_last_line = (i == len(lines) - 1)
-        if not is_last_line:
-            total_space_width = max_width - line_width
-            if len(line) - 1 > 0:
-                adjusted_space = total_space_width / (len(line) - 1)
+class JustifiedText():
+    def __init__(self, text: str, max_width: int, space: int, font, surface):
+        self.text = text
+        self.max_width = max_width
+        self.space = space
+        self.font = font
+        self.surface = surface
+        self.pos = (0, 0)
+
+        self.words = self.text.split()
+        self.lines = []
+        self.current_line = []
+        self.current_width = 0
+
+        self.word_height = self.font.size("Tg")[1]
+
+        self.create_lines()
+
+    def create_lines(self):
+        for word in self.words:
+            word_width = self.font.size(word)[0]
+            if self.current_width + word_width + (len(self.current_line) - 1) * self.space <= self.max_width or not self.current_line:
+                self.current_line.append(word)
+                self.current_width += word_width
             else:
-                adjusted_space = 0
-        else:
-            adjusted_space = space
+                self.lines.append(self.current_line)
+                self.current_line = [word]
+                self.current_width = word_width
+        self.lines.append(self.current_line)
 
-        x = pos[0]
-        for word in line:
-            word_surface = font.render(word, True, (0, 0, 0))
-            surface.blit(word_surface, (x, y))
-            x += font.size(word)[0] + adjusted_space
-        y += word_height
+    def render(self, input_x: int, input_y: int):
+        self.pos = input_x, input_y
+        x, y = self.pos #TODO: fix this, its jenky but it works for now
 
+        for i, line in enumerate(self.lines):
+            line_width = sum(self.font.size(word)[0] for word in line)
+            is_last_line = (i == len(self.lines) - 1)
+            if not is_last_line:
+                total_space_width = self.max_width - line_width
+                if len(line) - 1 > 0:
+                    adjusted_space = total_space_width / (len(line) - 1)
+                else:
+                    adjusted_space = 0
+            else:
+                adjusted_space = self.space
+
+            x = self.pos[0]
+            for word in line:
+                word_surface = self.font.render(word, True, (0, 0, 0))
+                self.surface.blit(word_surface, (x, y))
+                x += self.font.size(word)[0] + adjusted_space
+            y += self.word_height
+
+    def get_height(self):
+        return len(self.lines) * self.word_height
 
 class Button(pygame.sprite.Sprite):
     def __init__(self, text: str, padding: int, fgcolor, bgcolor, command = None):
@@ -83,7 +105,7 @@ class Button(pygame.sprite.Sprite):
 
         self.command = command
 
-        self.text_surface = fonts["body_font"].render(text, True, self.fgcolor)
+        self.text_surface = font.body_font.render(text, True, self.fgcolor)
 
         self.image = pygame.Surface([int(self.padding * 2) + self.text_surface.get_width(), int(self.padding * 2) + self.text_surface.get_height()])
         self.image.fill((0, 0, 0))
@@ -100,7 +122,7 @@ class Button(pygame.sprite.Sprite):
 
     def render_label(self, surface):
         if self.hovered:
-            pygame.draw.rect(surface, colors["nexus_blue"], (self.pos.x, self.pos.y, self.image.get_width(), self.image.get_height()))
+            pygame.draw.rect(surface, color.nexus_blue, (self.pos.x, self.pos.y, self.image.get_width(), self.image.get_height()))
             pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
         else:
             pygame.draw.rect(surface, self.bgcolor, (self.pos.x, self.pos.y, self.image.get_width(), self.image.get_height()))
@@ -132,19 +154,20 @@ class Window():
         self.events = pygame.event.get()
         
         self.header_text = "System Uptime Notice"
-        self.header_surface = fonts["header_font"].render(self.header_text, True, colors["white"])
+        self.header_surface = font.header_font.render(self.header_text, True, color.white)
 
         self.text_1 = "This is just a warning that your system uptime has exceeded 24 hours. If your system uptime exceeds 7 days you will be required to reboot. We recommend saving and closing all programs and running any available windows updates followed by a reboot at your earliest convienience."
         self.text_2 = "If you have any questions or concerns please email the helpdesk at helpdesk@archnexus.com"
 
         self.body_text = [self.text_1, self.text_2]
 
-        #self.ok_button = Button(100, 500, "Ok", 25, colors["white"], colors["nexus_green"])
-        self.cancel_button = Button("Acknowledge", 25, colors["white"], colors["nexus_orange"], self.close)
+        self.cancel_button = Button("Acknowledge", 25, color.white, color.nexus_orange, self.close)
         self.cancel_button.pos = pygame.math.Vector2(int(400 - (self.cancel_button.get_width() / 2)), 500)
 
+        self.justified_text_1 = JustifiedText(self.text_1, 700, 10, font.body_font, self.screen)
+        self.justified_text_2 = JustifiedText(self.text_2, 700, 10, font.body_font, self.screen)
+
         self.buttons = pygame.sprite.Group()
-        #self.buttons.add(self.ok_button)
         self.buttons.add(self.cancel_button)
 
     def start(self):
@@ -172,13 +195,13 @@ class Window():
         self.buttons.update()
 
     def draw(self):
-        self.screen.fill(colors["white"])
-        pygame.draw.rect(self.screen, colors["nexus_blue"], (0, 0, 800, 35 + int(self.header_surface.get_height() + 35)))
+        self.screen.fill(color.white)
+        pygame.draw.rect(self.screen, color.nexus_blue, (0, 0, 800, 35 + int(self.header_surface.get_height() + 35)))
         
         self.screen.blit(self.header_surface, (400 - int(self.header_surface.get_width() / 2), 35))
         
-        justify_text(self.text_1, 700, (50, 150), 10, fonts["body_font"], self.screen)
-        justify_text(self.text_2, 700, (50, 300), 10, fonts["body_font"], self.screen)
+        self.justified_text_1.render(50, 150)
+        self.justified_text_2.render(50, 150 + self.justified_text_1.get_height() + 35)
 
         self.buttons.draw(self.screen)
 
