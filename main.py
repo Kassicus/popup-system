@@ -49,7 +49,7 @@ images = Images()
 
 class Sounds():
     def __init__(self):
-        pass
+        self.test = pygame.mixer.Sound("assets/sounds/test.wav")
 
 sound = Sounds()
 
@@ -188,6 +188,8 @@ class Window():
 
         self.buttons = pygame.sprite.Group()
         self.buttons.add(self.cancel_button)
+
+        #sound.test.play()
 
     def start(self):
         while self.running:
