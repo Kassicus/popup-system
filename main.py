@@ -47,6 +47,12 @@ class Images():
 
 images = Images()
 
+class Sounds():
+    def __init__(self):
+        pass
+
+sound = Sounds()
+
 class JustifiedText():
     def __init__(self, text: str, max_width: int, space: int, font, surface):
         self.text = text
