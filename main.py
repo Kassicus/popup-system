@@ -39,12 +39,14 @@ font = Fonts()
 class Images():
     def __init__(self) -> None:
         self.nexus_logo = None
-
-        self.scale = 8
+        self.character_elk = None
 
     def load_images(self) -> None:
         self.nexus_logo = pygame.image.load("assets/images/nexus_logo.png").convert_alpha()
-        self.nexus_logo = pygame.transform.scale(self.nexus_logo, (int(self.nexus_logo.get_width() / self.scale), int(self.nexus_logo.get_height() / self.scale)))
+        self.nexus_logo = pygame.transform.scale(self.nexus_logo, (int(self.nexus_logo.get_width() / 8), int(self.nexus_logo.get_height() / 8)))
+
+        self.character_elk = pygame.image.load("assets/images/character_elk.png").convert_alpha()
+        self.character_elk = pygame.transform.scale(self.character_elk, (int(self.character_elk.get_width() / 15), int(self.character_elk.get_height() / 15)))
 
 images = Images()
 
@@ -181,7 +183,7 @@ class Window():
         self.clock = pygame.time.Clock()
 
         self.header_text = "This Is A Test Popup!"
-        self.header_surface = font.header_font.render(self.header_text, True, color.nexus_blue)
+        self.header_surface = font.header_font.render(self.header_text, True, color.white)
 
         self.fps_text = f"{int(self.clock.get_fps())}"
         self.fps_surface = None
@@ -196,14 +198,14 @@ class Window():
         self.cancel_button = Button("Press Me To Close The Popup!", 25, color.white, color.nexus_orange, self.close)
         self.cancel_button.pos = pygame.math.Vector2(int(400 - (self.cancel_button.get_width() / 2)), 475)
 
-        self.justified_text_1 = JustifiedText(self.text_1, 700, 10, font.body_font, self.screen)
-        self.justified_text_2 = JustifiedText(self.text_2, 700, 10, font.body_font, self.screen)
-        self.justified_text_3 = JustifiedText(self.text_3, 700, 10, font.body_font, self.screen)
+        self.justified_text_1 = JustifiedText(self.text_1, 350, 10, font.body_font, self.screen)
+        self.justified_text_2 = JustifiedText(self.text_2, 350, 10, font.body_font, self.screen)
+        self.justified_text_3 = JustifiedText(self.text_3, 350, 10, font.body_font, self.screen)
 
         self.buttons = pygame.sprite.Group()
         self.buttons.add(self.cancel_button)
 
-        sound.alert.play()
+        #sound.alert.play()
 
     def start(self) -> None:
         while self.running:
@@ -232,9 +234,9 @@ class Window():
         print(self.elapsed_time)
         self.running = False
 
-    def close_with_error(self, error: str = "") -> None:
+    def close_with_error(self, error: str = "", code: int = 1) -> None:
         print(f"An error occurred: {error}")
-        self.exit_code = 1
+        self.exit_code = code
         self.close()
 
     def update(self) -> None:
@@ -242,23 +244,23 @@ class Window():
 
         self.elapsed_time = datetime.datetime.now() - self.init_time
 
-        if int(self.elapsed_time.total_seconds()) % 60 == 0:
-            sound.alert.play()
+        #if int(self.elapsed_time.total_seconds()) % 60 == 0:
+            #sound.alert.play()
             
         pygame.display.update()
-        self.clock.tick()
+        self.clock.tick(10)
 
     def draw(self) -> None:
         self.screen.fill(color.white)
-        #pygame.draw.rect(self.screen, color.nexus_blue, (0, 0, 800, 35 + int(self.header_surface.get_height() + 35)))
-        
-        self.screen.blit(images.nexus_logo, (50, 35))
+        pygame.draw.rect(self.screen, color.nexus_blue, (0, 0, 800, 35 + int(self.header_surface.get_height() + 35)))
 
-        self.screen.blit(self.header_surface, (50 + images.nexus_logo.get_width() + 25, 50))
+        self.screen.blit(self.header_surface, (400 - (self.header_surface.get_width() / 2), 35))
+
+        self.screen.blit(images.character_elk, (-45, 600 - images.character_elk.get_height() - 10))
         
-        self.justified_text_1.render(50, 70 + self.header_surface.get_height() + 35)
-        self.justified_text_2.render(50, self.justified_text_1.pos[1] + self.justified_text_1.get_height() + 35)
-        self.justified_text_3.render(50, self.justified_text_2.pos[1] + self.justified_text_2.get_height() + 35)
+        self.justified_text_1.render(250, 70 + self.header_surface.get_height() + 35)
+        self.justified_text_2.render(250, self.justified_text_1.pos[1] + self.justified_text_1.get_height() + 35)
+        self.justified_text_3.render(250, self.justified_text_2.pos[1] + self.justified_text_2.get_height() + 35)
 
         self.buttons.draw(self.screen)
 
