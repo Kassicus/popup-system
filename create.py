@@ -5,7 +5,9 @@ PyInstaller.__main__.run([
     '--clean',
     '-y',
     '-n',
-    "SystemUptime24Package",
+    "TestPopup",
     '--add-data=assets/fonts/Roboto-Regular.ttf;assets/fonts',
+    '--add-data=assets/images/nexus_logo.png;assets/images',
+    '--add-data=assets/sounds/test.wav;assets/sounds',
     'main.py'
 ])

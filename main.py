@@ -39,7 +39,7 @@ class Images():
     def __init__(self):
         self.nexus_logo = None
 
-        self.scale = 10
+        self.scale = 8
 
     def load_images(self):
         self.nexus_logo = pygame.image.load("assets/images/nexus_logo.png").convert_alpha()
@@ -172,19 +172,21 @@ class Window():
         self.running = True
         self.events = pygame.event.get()
         
-        self.header_text = "System Uptime Notice"
+        self.header_text = "This Is A Test Popup!"
         self.header_surface = font.header_font.render(self.header_text, True, color.nexus_blue)
 
-        self.text_1 = "This is just a warning that your system uptime has exceeded 24 hours. If your system uptime exceeds 3 days you will be required to reboot. We recommend saving and closing all programs and running all available windows updates followed by a reboot at your earliest convienience."
-        self.text_2 = "If you have any questions or concerns please reach out to helpdesk by emailing helpdesk@archnexus.com"
+        self.text_1 = "PLEASE READ: "
+        self.text_2 = "This Popup is just for testing"
+        self.text_3 = "This is a long line of filler text to test out the auto justify tool and verify that when I make changes to the codebase, the justify tool will still work as intended."
 
         self.body_text = [self.text_1, self.text_2]
 
-        self.cancel_button = Button("Acknowledge", 25, color.white, color.nexus_orange, self.close)
+        self.cancel_button = Button("Press Me To Close The Popup!", 25, color.white, color.nexus_orange, self.close)
         self.cancel_button.pos = pygame.math.Vector2(int(400 - (self.cancel_button.get_width() / 2)), 475)
 
         self.justified_text_1 = JustifiedText(self.text_1, 700, 10, font.body_font, self.screen)
         self.justified_text_2 = JustifiedText(self.text_2, 700, 10, font.body_font, self.screen)
+        self.justified_text_3 = JustifiedText(self.text_3, 700, 10, font.body_font, self.screen)
 
         self.buttons = pygame.sprite.Group()
         self.buttons.add(self.cancel_button)
@@ -220,12 +222,12 @@ class Window():
         #pygame.draw.rect(self.screen, color.nexus_blue, (0, 0, 800, 35 + int(self.header_surface.get_height() + 35)))
         
         self.screen.blit(images.nexus_logo, (50, 35))
-        self.screen.blit(images.nexus_logo, (800 - 50 - images.nexus_logo.get_width(), 35))
 
-        self.screen.blit(self.header_surface, (400 - int(self.header_surface.get_width() / 2), 45))
+        self.screen.blit(self.header_surface, (50 + images.nexus_logo.get_width() + 25, 50))
         
         self.justified_text_1.render(50, 70 + self.header_surface.get_height() + 35)
         self.justified_text_2.render(50, self.justified_text_1.pos[1] + self.justified_text_1.get_height() + 35)
+        self.justified_text_3.render(50, self.justified_text_2.pos[1] + self.justified_text_2.get_height() + 35)
 
         self.buttons.draw(self.screen)
 
