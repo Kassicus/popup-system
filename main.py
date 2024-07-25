@@ -1,5 +1,6 @@
 import pygame
 import sys
+import datetime
 
 pygame.init()
 
@@ -171,9 +172,18 @@ class Window():
 
         self.running = True
         self.events = pygame.event.get()
-        
+
+        self.init_time = datetime.datetime.now()
+        self.elapsed_time = None
+
+        self.clock = pygame.time.Clock()
+
         self.header_text = "This Is A Test Popup!"
         self.header_surface = font.header_font.render(self.header_text, True, color.nexus_blue)
+
+        self.fps_text = f"{int(self.clock.get_fps())}"
+        self.fps_surface = None
+        self.render_fps = False
 
         self.text_1 = "PLEASE READ: "
         self.text_2 = "This Popup is just for testing"
@@ -210,12 +220,20 @@ class Window():
                 if event.key == pygame.K_q:
                     self.running = False
 
+                if event.key == pygame.K_f:
+                    self.render_fps = not self.render_fps
+
     def close(self):
+        print(self.elapsed_time)
         self.running = False
 
     def update(self):
-        pygame.display.update()
         self.buttons.update()
+
+        self.elapsed_time = datetime.datetime.now() - self.init_time
+
+        pygame.display.update()
+        self.clock.tick()
 
     def draw(self):
         self.screen.fill(color.white)
@@ -234,6 +252,10 @@ class Window():
         for button in self.buttons:
             button.render_label(self.screen)
 
+        if self.render_fps:
+            self.fps_text = f"{int(self.clock.get_fps())}"
+            self.fps_surface = font.body_font.render(self.fps_text, True, color.nexus_orange)
+            self.screen.blit(self.fps_surface, (800 - self.fps_surface.get_width() - 10, 600 - self.fps_surface.get_height() - 10))
 
 if __name__ == '__main__':
     win = Window()
