@@ -7,7 +7,7 @@ pygame.init()
 display_size = pygame.display.Info()
 
 class Colors():
-    def __init__(self):
+    def __init__(self) -> None:
         self.black = pygame.Color(0, 0, 0, 255)
         self.white = pygame.Color(255, 255, 255, 255)
         self.nexus_blue = pygame.Color(0, 153, 216, 255)
@@ -20,13 +20,13 @@ class Colors():
 color = Colors()
 
 class Fonts():
-    def __init__(self):
+    def __init__(self) -> None:
         self.header_font = None
         self.body_font = None
 
         self.configure_fonts()
 
-    def configure_fonts(self):
+    def configure_fonts(self) -> None:
         if display_size.current_w > 1920:
             self.header_font = pygame.font.Font("assets/fonts/Roboto-Regular.ttf", 48)
             self.body_font = pygame.font.Font("assets/fonts/Roboto-Regular.ttf", 22)
@@ -37,25 +37,25 @@ class Fonts():
 font = Fonts()
 
 class Images():
-    def __init__(self):
+    def __init__(self) -> None:
         self.nexus_logo = None
 
         self.scale = 8
 
-    def load_images(self):
+    def load_images(self) -> None:
         self.nexus_logo = pygame.image.load("assets/images/nexus_logo.png").convert_alpha()
         self.nexus_logo = pygame.transform.scale(self.nexus_logo, (int(self.nexus_logo.get_width() / self.scale), int(self.nexus_logo.get_height() / self.scale)))
 
 images = Images()
 
 class Sounds():
-    def __init__(self):
-        self.test = pygame.mixer.Sound("assets/sounds/test.wav")
+    def __init__(self) -> None:
+        self.alert = pygame.mixer.Sound("assets/sounds/alert.wav")
 
 sound = Sounds()
 
 class JustifiedText():
-    def __init__(self, text: str, max_width: int, space: int, font, surface):
+    def __init__(self, text: str, max_width: int, space: int, font, surface) -> None:
         self.text = text
         self.max_width = max_width
         self.space = space
@@ -72,7 +72,7 @@ class JustifiedText():
 
         self.create_lines()
 
-    def create_lines(self):
+    def create_lines(self) -> None:
         for word in self.words:
             word_width = self.font.size(word)[0]
             if self.current_width + word_width + (len(self.current_line) - 1) * self.space <= self.max_width or not self.current_line:
@@ -84,7 +84,7 @@ class JustifiedText():
                 self.current_width = word_width
         self.lines.append(self.current_line)
 
-    def render(self, input_x: int, input_y: int):
+    def render(self, input_x: int, input_y: int) -> None:
         self.pos = input_x, input_y
         x, y = self.pos #TODO: fix this, its jenky but it works for now
 
@@ -107,11 +107,11 @@ class JustifiedText():
                 x += self.font.size(word)[0] + adjusted_space
             y += self.word_height
 
-    def get_height(self):
+    def get_height(self) -> int:
         return len(self.lines) * self.word_height
 
 class Button(pygame.sprite.Sprite):
-    def __init__(self, text: str, padding: int, fgcolor, bgcolor, command = None):
+    def __init__(self, text: str, padding: int, fgcolor, bgcolor, command = None) -> None:
         pygame.sprite.Sprite.__init__(self)
 
         self.pos = pygame.math.Vector2(-500, -500)
@@ -132,14 +132,14 @@ class Button(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.topleft = self.pos
 
-    def update(self):
+    def update(self) -> None:
         self.check_hover()
 
         if self.hovered:
             if pygame.mouse.get_pressed()[0]:
                 self.run_command()
 
-    def render_label(self, surface):
+    def render_label(self, surface) -> None:
         if self.hovered:
             pygame.draw.rect(surface, color.nexus_blue, (self.pos.x, self.pos.y, self.image.get_width(), self.image.get_height()))
             pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
@@ -149,7 +149,7 @@ class Button(pygame.sprite.Sprite):
 
         surface.blit(self.text_surface, (self.pos.x + self.padding, self.pos.y + self.padding))
 
-    def check_hover(self):
+    def check_hover(self) -> None:
         mouse_pos = pygame.mouse.get_pos()
 
         if self.pos.x < mouse_pos[0] < self.pos.x + self.rect.width and self.pos.y < mouse_pos[1] < self.pos.y + self.rect.height:
@@ -157,21 +157,23 @@ class Button(pygame.sprite.Sprite):
         else:
             self.hovered = False
 
-    def get_width(self):
+    def get_width(self) -> int:
         return self.rect.width
     
-    def run_command(self):
+    def run_command(self) -> None:
         if self.command is not None:
             self.command()
 
 
 class Window():
-    def __init__(self):
+    def __init__(self) -> None:
         self.screen = pygame.display.set_mode([800, 600], pygame.NOFRAME)
         images.load_images()
 
         self.running = True
         self.events = pygame.event.get()
+
+        self.exit_code = 0
 
         self.init_time = datetime.datetime.now()
         self.elapsed_time = None
@@ -201,15 +203,15 @@ class Window():
         self.buttons = pygame.sprite.Group()
         self.buttons.add(self.cancel_button)
 
-        #sound.test.play()
+        sound.alert.play()
 
-    def start(self):
+    def start(self) -> None:
         while self.running:
             self.event_loop()
             self.update()
             self.draw()
 
-    def event_loop(self):
+    def event_loop(self) -> None:
         self.events = pygame.event.get()
 
         for event in self.events:
@@ -223,19 +225,30 @@ class Window():
                 if event.key == pygame.K_f:
                     self.render_fps = not self.render_fps
 
-    def close(self):
+                if event.key == pygame.K_e:
+                    self.close_with_error()
+
+    def close(self) -> None:
         print(self.elapsed_time)
         self.running = False
 
-    def update(self):
+    def close_with_error(self, error: str = "") -> None:
+        print(f"An error occurred: {error}")
+        self.exit_code = 1
+        self.close()
+
+    def update(self) -> None:
         self.buttons.update()
 
         self.elapsed_time = datetime.datetime.now() - self.init_time
 
+        if int(self.elapsed_time.total_seconds()) % 60 == 0:
+            sound.alert.play()
+            
         pygame.display.update()
         self.clock.tick()
 
-    def draw(self):
+    def draw(self) -> None:
         self.screen.fill(color.white)
         #pygame.draw.rect(self.screen, color.nexus_blue, (0, 0, 800, 35 + int(self.header_surface.get_height() + 35)))
         
@@ -260,4 +273,4 @@ class Window():
 if __name__ == '__main__':
     win = Window()
     win.start()
-    sys.exit(0)
+    sys.exit(win.exit_code)
