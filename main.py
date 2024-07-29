@@ -70,6 +70,8 @@ class JustifiedText():
         self.current_line = []
         self.current_width = 0
 
+        self.word_surfaces = []
+
         self.word_height = self.font.size("Tg")[1]
 
         self.create_lines()
@@ -86,7 +88,7 @@ class JustifiedText():
                 self.current_width = word_width
         self.lines.append(self.current_line)
 
-    def render(self, input_x: int, input_y: int) -> None:
+    def generate_word_surfaces(self, input_x: int, input_y: int) -> None:
         self.pos = input_x, input_y
         x, y = self.pos #TODO: fix this, its jenky but it works for now
 
@@ -105,9 +107,13 @@ class JustifiedText():
             x = self.pos[0]
             for word in line:
                 word_surface = self.font.render(word, True, (0, 0, 0))
-                self.surface.blit(word_surface, (x, y))
+                self.word_surfaces.append([word_surface, x, y])
                 x += self.font.size(word)[0] + adjusted_space
             y += self.word_height
+
+    def render(self) -> None:
+        for word_surface in self.word_surfaces:
+            self.surface.blit(word_surface[0], (word_surface[1], word_surface[2]))
 
     def get_height(self) -> int:
         return len(self.lines) * self.word_height
@@ -202,6 +208,10 @@ class Window():
         self.justified_text_2 = JustifiedText(self.text_2, 350, 10, font.body_font, self.screen)
         self.justified_text_3 = JustifiedText(self.text_3, 350, 10, font.body_font, self.screen)
 
+        self.justified_text_1.generate_word_surfaces(250, 70 + self.header_surface.get_height() + 35)
+        self.justified_text_2.generate_word_surfaces(250, self.justified_text_1.pos[1] + self.justified_text_1.get_height() + 35)
+        self.justified_text_3.generate_word_surfaces(250, self.justified_text_2.pos[1] + self.justified_text_2.get_height() + 35)
+
         self.buttons = pygame.sprite.Group()
         self.buttons.add(self.cancel_button)
 
@@ -258,9 +268,9 @@ class Window():
 
         self.screen.blit(images.character_elk, (-45, 600 - images.character_elk.get_height() - 10))
         
-        self.justified_text_1.render(250, 70 + self.header_surface.get_height() + 35)
-        self.justified_text_2.render(250, self.justified_text_1.pos[1] + self.justified_text_1.get_height() + 35)
-        self.justified_text_3.render(250, self.justified_text_2.pos[1] + self.justified_text_2.get_height() + 35)
+        self.justified_text_1.render()
+        self.justified_text_2.render()
+        self.justified_text_3.render()
 
         self.buttons.draw(self.screen)
 
