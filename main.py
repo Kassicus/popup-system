@@ -212,7 +212,7 @@ class Window():
             self.event_loop()
             self.update()
             self.draw()
-
+ 
     def event_loop(self) -> None:
         self.events = pygame.event.get()
 
@@ -248,7 +248,7 @@ class Window():
             #sound.alert.play()
             
         pygame.display.update()
-        self.clock.tick(10)
+        self.clock.tick(30)
 
     def draw(self) -> None:
         self.screen.fill(color.white)
